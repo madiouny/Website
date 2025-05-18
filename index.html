@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prompts Dealer</title>
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(130deg, #0f172a, #1e293b);
+  color: #fff;
+  overflow-x: hidden;
+  transition: background 0.5s, color 0.5s;
+}
+.presentation {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeOut 3s ease 2s forwards;
+  z-index: 100;
+}
+.presentation h1 {
+  font-size: 3em;
+  color: #38bdf8;
+}
+@keyframes fadeOut {
+  to { opacity: 0; visibility: hidden; }
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  font-size: 1.2em;
+}
+.logo {
+  font-weight: bold;
+  background: linear-gradient(45deg, #38bdf8, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.mode-toggle {
+  background: #1e293b;
+  color: #fff;
+  border: 1px solid #38bdf8;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+.mode-toggle:hover {
+  background-color: #38bdf8;
+  color: #0f172a;
+}
+main {
+  text-align: center;
+  padding: 60px 20px;
+}
+main h2 {
+  font-size: 2em;
+}
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 30px 0;
+}
+button.category {
+  background: #1e293b;
+  border: 1px solid #38bdf8;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  user-select: none;
+}
+button.category:hover {
+  background: #38bdf8;
+  color: #0f172a;
+}
+.prompt-box {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 800px;
+  margin: 0 auto;
+  margin-top: 30px;
+  position: relative;
+  user-select: text;
+}
+.prompt-box pre {
+  white-space: pre-wrap;
+  text-align: left;
+  cursor: text;
+}
+.copy, .generate {
+  margin: 10px 5px;
+  padding: 8px 16px;
+  background: #0ea5e9;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  user-select: none;
+  transition: background-color 0.3s;
+}
+.copy:hover, .generate:hover {
+  background: #0284c7;
+}
+footer {
+  text-align: center;
+  padding: 30px;
+  font-size: 0.9em;
+  color: #94a3b8;
+}
+#bgAnim {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: radial-gradient(circle at 20% 20%, #1e3a8a33 0%, transparent 60%),
+              radial-gradient(circle at 80% 80%, #0284c733 0%, transparent 60%);
+  animation: moveBg 10s infinite alternate;
+}
+@keyframes moveBg {
+  0% { background-position: 20% 20%, 80% 80%; }
+  100% { background-position: 30% 30%, 70% 70%; }
+}
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0284c7;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 1em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  z-index: 9999;
+  user-select: none;
+}
+.toast.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+</style>
+</head>
+<body>
+<div class="presentation"><h1>UNLEASH YOUR AI POWER</h1></div>
+<div id="bgAnim"></div>
+<header>
+  <div class="logo">Prompts Dealer</div>
+  <button class="mode-toggle" id="modeToggleBtn" onclick="toggleMode()">🌙</button>
+</header>
+<main>
+  <h2>Need AI Prompts?</h2>
+  <p>Choose a category and get powerful ready-to-use prompts.</p>
+  <div class="categories" id="categoryList">
+    <button class="category" onclick="selectCategory('Content Creation')">Content Creation</button>
+    <button class="category" onclick="selectCategory('Coding')">Coding</button>
+    <button class="category" onclick="selectCategory('Marketing')">Marketing</button>
+    <button class="category" onclick="selectCategory('Business Strategy')">Business Strategy</button>
+    <button class="category" onclick="selectCategory('Research')">Research</button>
+  </div>
+  <div class="prompt-box" id="promptBox" style="display:none;">
+    <pre id="promptText"></pre>
+    <button class="copy" onclick="copyPrompt()">Copy</button>
+    <button class="generate" onclick="generatePrompt()">Generate More</button>
+  </div>
+</main>
+<footer>
+  © 2025 Prompts Dealer – Made with passion by MADIOUNY
+</footer>
+<div class="toast" id="toast">Prompt copied!</div>
+<script>
+const prompts = {
+  "Content Creation": [
+    "Develop a comprehensive 30-day content calendar for a health and wellness blog, focusing on topics such as nutrition, exercise routines, mental health, and holistic wellness strategies.",
+    "Create a detailed script for a 10-minute YouTube video explaining the benefits and risks of intermittent fasting, supported by recent scientific studies and expert opinions.",
+    "Design an engaging infographic concept that visualizes the process of creating viral social media content, including key factors like timing, relevance, and emotional impact.",
+    "Write a detailed guide on how to repurpose blog posts into various social media formats, such as Instagram reels, Twitter threads, and LinkedIn articles, to maximize audience reach.",
+    "Outline a case study showcasing a successful influencer marketing campaign, highlighting the strategy, execution, and measurable results achieved.",
+    "Compose a comprehensive list of 15 actionable tips for beginner content creators to improve engagement on TikTok, including hashtag strategies and collaboration ideas.",
+    "Draft a full-length eBook introduction that explains the importance of storytelling in digital content and how to craft compelling narratives that resonate with audiences.",
+    "Generate a series of 7 motivational quotes with explanations on how content creators can overcome burnout and stay productive in a competitive environment.",
+    "Write a detailed tutorial on using AI-powered tools for content generation, covering platforms, best practices, and ethical considerations.",
+    "Develop a step-by-step plan for launching a podcast, including content planning, recording techniques, guest outreach, and promotion strategies.",
+    "Explain the process of creating effective call-to-action messages for different content types and platforms, providing examples and testing approaches.",
+    "Analyze emerging trends in video content for 2025 and suggest how creators can adapt to stay relevant in changing social media algorithms.",
+    "Create a checklist for auditing existing content to improve SEO performance and user engagement, detailing key metrics and tools to use.",
+    "Write a blog post that compares long-form versus short-form content, discussing advantages, audience preferences, and platform suitability.",
+    "Design a social media challenge concept aimed at increasing follower interaction over 30 days, including daily themes and prize ideas.",
+    "Develop a FAQ section for a content creator’s website addressing common questions about copyright, monetization, and collaboration.",
+    "Outline a strategy for integrating user-generated content into a brand’s marketing plan to boost authenticity and community engagement.",
+    "Write a detailed explanation of how to use data analytics to measure content performance and inform future content creation decisions.",
+    "Compose a script for a live webinar teaching beginner content creators about personal branding and online presence building.",
+    "Generate a comprehensive glossary of 30 essential terms every content creator should know, with definitions and examples."
+  ],
+  "Coding": [
+    "Write a detailed Python script to scrape product names, prices, and ratings from an e-commerce website, handle pagination, and export data to CSV with error handling.",
+    "Develop a full-stack application idea using React for frontend and Flask for backend that allows users to create, update, and track their daily goals with integrated motivational quotes and reminders.",
+    "Create a step-by-step guide to implement user authentication in a React app using JWT tokens and secure password hashing with bcrypt on the Flask backend.",
+    "Write a Python script to automate downloading images from a website gallery, resize them to multiple resolutions, and save them in organized folders.",
+    "Design a REST API with Flask to manage a library system with endpoints for adding, deleting, and searching books with pagination and filtering.",
+    "Develop a React component library for common UI elements such as buttons, modals, and forms with customizable themes and accessibility features.",
+    "Implement a full test suite for a Flask backend using Pytest, including unit tests, integration tests, and mocking external API calls.",
+    "Write a tutorial explaining how to deploy a React and Flask app on AWS using EC2, configuring security groups, load balancing, and automatic scaling.",
+    "Generate a script to monitor website uptime by periodically pinging URLs, logging response times, and sending alerts if a site is down.",
+    "Create a chatbot using Python that integrates with Telegram API to respond to user commands and provide weather updates using a third-party weather API.",
+    "Write a Python script to parse large JSON files efficiently and extract specific data fields, storing results in a PostgreSQL database.",
+    "Design a real-time collaborative text editor using React with WebSocket connections and Flask backend to manage document states and users.",
+    "Explain how to implement OAuth2 login with Google and Facebook in a React app with secure token management on the backend.",
+    "Develop a CLI tool in Python that assists developers in scaffolding new projects with customizable templates for React, Flask, and Docker configurations.",
+    "Write a detailed article on best practices for error handling and logging in Python web applications, including examples with Flask and logging libraries.",
+    "Create a React dashboard to visualize user activity data with charts, filtering options, and export capabilities using Chart.js or D3.js.",
+    "Develop an automated testing framework for React components using Jest and React Testing Library, including coverage reports and CI integration.",
+    "Generate a Python script to scrape job postings from multiple job boards, clean the data, and analyze trending skills using natural language processing libraries.",
+    "Write a guide on integrating payment gateways (like Stripe or PayPal) into a React and Flask e-commerce app with secure transaction handling.",
+    "Explain step-by-step how to containerize a full-stack React and Flask app using Docker and deploy it using Kubernetes clusters."
+  ],
+  "Marketing": [
+    "Write a detailed product launch email sequence for a new AI-powered design tool aimed at startup founders, including teaser, launch announcement, and follow-up emails.",
+    "Develop 5 creative social media post ideas promoting a limited-time offer for a SaaS productivity app, incorporating engaging visuals and call-to-actions.",
+    "Create a comprehensive guide for building a brand voice on social media platforms, including tone, style, and engagement tips.",
+    "Outline a step-by-step influencer marketing campaign targeting micro-influencers in the tech industry, including outreach templates and performance metrics.",
+    "Write an SEO-friendly blog post about the importance of content marketing in 2025 and how AI tools can enhance strategy effectiveness.",
+    "Design an email newsletter template that increases open rates and click-through rates for B2B SaaS companies.",
+    "Generate 10 headline ideas for Facebook ads promoting an online course about digital marketing fundamentals.",
+    "Develop a marketing plan for launching a subscription box service, including market research, target demographics, pricing strategies, and promotional tactics.",
+    "Write a case study showing how retargeting ads improved conversion rates for an e-commerce store with data-driven insights.",
+    "Create a list of 15 creative giveaway ideas that can boost engagement and follower growth on Instagram and TikTok.",
+    "Explain how to use Google Analytics and Facebook Pixel data to optimize ad campaigns and increase ROI.",
+    "Write a blog post comparing organic versus paid social media strategies with real-world examples and budget considerations.",
+    "Develop a content calendar template for daily social media posts that balance promotion, education, and community engagement.",
+    "Outline the process of conducting a competitor analysis in digital marketing and how to leverage findings to improve campaign performance.",
+    "Write a detailed tutorial on creating effective landing pages that convert visitors into customers, with examples and A/B testing tips.",
+    "Create 7 email subject lines designed to increase open rates for promotional campaigns in the fitness industry.",
+    "Generate a report on emerging trends in video marketing for 2025 and how brands can leverage short-form video content.",
+    "Write an in-depth article about building customer loyalty programs and using CRM tools to personalize marketing efforts.",
+    "Design a step-by-step approach to launch a podcast as part of a content [Truncated for brevity]",
+    "Create detailed customer personas for a fitness app targeting millennials, including motivations, challenges, and preferred communication channels.",
+    "Outline a webinar series aimed at educating small business owners about effective email marketing techniques and automation tools.",
+    "Generate a list of 10 key performance indicators (KPIs) every digital marketer should track and how to interpret them.",
+    "Write an article about emerging trends in influencer marketing and how brands can adapt to new social platforms.",
+    "Design a strategy for integrating user reviews and testimonials into marketing materials to build trust and credibility.",
+    "Create an in-depth guide on using LinkedIn Ads for B2B lead generation with campaign setup, targeting, and best practices.",
+    "Develop an omnichannel marketing approach combining email, social, and offline strategies to create seamless customer experiences."
+  ],
+  "Business Strategy": [
+    "Draft a detailed SWOT analysis template with examples tailored for tech startups entering competitive markets.",
+    "Create a 12-month roadmap for scaling a SaaS business, including milestones for product development, marketing, hiring, and funding rounds.",
+    "Write a guide on conducting competitive market research with tools, techniques, and tips to identify opportunities and threats.",
+    "Develop a strategic plan for expanding a retail brand internationally, including localization, regulatory compliance, and supply chain considerations.",
+    "Outline a process for building a business model canvas for new ventures with real examples and practical exercises.",
+    "Explain how to set SMART goals for small businesses and measure progress using KPIs and OKRs.",
+    "Create a framework for decision-making under uncertainty, incorporating risk assessment and scenario planning.",
+    "Write a whitepaper on the benefits of adopting agile methodologies in business strategy and project management.",
+    "Develop a detailed investor pitch deck outline that clearly communicates value proposition, market size, financials, and growth strategy.",
+    "Design a customer segmentation strategy to improve targeted marketing and product development, including data sources and analysis methods.",
+    "Explain the importance of corporate social responsibility (CSR) and how to integrate it into business strategy effectively.",
+    "Write a comprehensive article about digital transformation strategies for traditional businesses adapting to modern markets.",
+    "Create a guide to building strategic partnerships and alliances, including negotiation tips and success factors.",
+    "Develop a cost-benefit analysis template for evaluating new business initiatives and investments.",
+    "Outline a succession planning process for family-owned businesses to ensure continuity and leadership development.",
+    "Write a detailed overview of how to conduct a business process reengineering project to improve efficiency and reduce costs.",
+    "Create a roadmap for implementing sustainable business practices that align with environmental and social governance (ESG) criteria.",
+    "Explain the role of innovation management in maintaining competitive advantage and how to foster a culture of innovation.",
+    "Develop a crisis management plan template to prepare businesses for unexpected disruptions and reputation risks.",
+    "Write an in-depth analysis of emerging global market trends and their implications for strategic business planning."
+  ],
+  "Research": [
+    "Write a comprehensive literature review on the impact of social media on mental health, synthesizing studies from the last five years.",
+    "Design a research proposal to study the effects of remote work on employee productivity and job satisfaction in IT companies.",
+    "Explain methodologies for qualitative research, including interviews, focus groups, and ethnography, with pros and cons of each.",
+    "Create a detailed guide on quantitative data analysis using SPSS or R, including data cleaning, descriptive statistics, and regression models.",
+    "Develop a step-by-step process for conducting systematic reviews and meta-analyses in healthcare research.",
+    "Write a tutorial on using bibliometric tools to analyze publication trends and research impact across disciplines.",
+    "Outline ethical considerations in research involving human subjects, including informed consent and confidentiality protocols.",
+    "Explain different sampling techniques in survey research and how to select the appropriate method for study objectives.",
+    "Create a checklist for designing valid and reliable questionnaires, including question types, phrasing, and layout tips.",
+    "Develop a guide on how to write effective research abstracts that summarize objectives, methods, results, and conclusions.",
+    "Write about the use of mixed-methods research designs and how to integrate qualitative and quantitative data effectively.",
+    "Explain the principles of experimental design, including control groups, randomization, and bias reduction strategies.",
+    "Create a tutorial on using NVivo software for coding and analyzing qualitative data from interviews and focus groups.",
+    "Develop a step-by-step guide to preparing research posters for academic conferences with tips on visual design and content layout.",
+    "Write an article about challenges and best practices in longitudinal studies and how to handle attrition and data consistency.",
+    "Outline the process for submitting research proposals to institutional review boards (IRB) with common pitfalls and advice.",
+    "Explain the role of data visualization in research communication and tools like Tableau, Power BI, or Python libraries.",
+    "Create a guide to writing literature synthesis papers that critically analyze themes, gaps, and future directions in a field.",
+    "Develop a template for research project timelines including milestones for data collection, analysis, writing, and publication.",
+    "Write about emerging technologies in research such as AI-driven data analysis, virtual labs, and blockchain for data integrity."
+  ]
+};
+
+let currentCategory = "";
+let currentIndex = 0;
+
+function selectCategory(category) {
+  currentCategory = category;
+  currentIndex = 0;
+  showPrompt(prompts[category][0]);
+  document.getElementById('promptBox').style.display = "block";
+}
+
+function showPrompt(text) {
+  document.getElementById('promptText').textContent = text;
+}
+
+function generatePrompt() {
+  if (!currentCategory) return;
+  currentIndex = (currentIndex + 1) % prompts[currentCategory].length;
+  showPrompt(prompts[currentCategory][currentIndex]);
+}
+
+function copyPrompt() {
+  const text = document.getElementById('promptText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast("Prompt copied!");
+  });
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+function toggleMode() {
+  const btn = document.getElementById('modeToggleBtn');
+  const body = document.body;
+  if(body.style.backgroundColor === 'white') {
+    body.style.backgroundColor = '';
+    body.style.color = '';
+    btn.textContent = '🌙';
+  } else {
+    body.style.backgroundColor = 'white';
+    body.style.color = '#0f172a';
+    btn.textContent = '☀️';
+  }
+}
+</script>
+</body>
+</html>
