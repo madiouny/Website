@@ -1,20 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prompts Dealer</title>
 <style>
-body { font-family: Arial, sans-serif; margin: 20px; background-color: #f9f9f9; color: #333; }
-h1, h2 { text-align: center; }
-.category { margin-bottom: 50px; }
-.prompt { background: #fff; padding: 15px; margin: 10px 0; border-left: 5px solid #007acc; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(130deg, #0f172a, #1e293b);
+  color: #fff;
+  overflow-x: hidden;
+}
+.presentation {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeOut 3s ease 2s forwards;
+  z-index: 100;
+}
+.presentation h1 {
+  font-size: 3em;
+  color: #38bdf8;
+}
+@keyframes fadeOut {
+  to { opacity: 0; visibility: hidden; }
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  font-size: 1.2em;
+}
+.logo {
+  font-weight: bold;
+  background: linear-gradient(45deg, #38bdf8, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.mode-toggle {
+  background: #1e293b;
+  color: #fff;
+  border: 1px solid #38bdf8;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+main {
+  text-align: center;
+  padding: 60px 20px;
+}
+main h2 {
+  font-size: 2em;
+}
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 30px 0;
+}
+button.category {
+  background: #1e293b;
+  border: 1px solid #38bdf8;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+button.category:hover {
+  background: #38bdf8;
+  color: #0f172a;
+}
+.prompt-box {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 800px;
+  margin: 0 auto;
+  margin-top: 30px;
+  position: relative;
+}
+.prompt-box pre {
+  white-space: pre-wrap;
+  text-align: left;
+}
+.copy, .generate {
+  margin: 10px 5px;
+  padding: 8px 16px;
+  background: #0ea5e9;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+}
+footer {
+  text-align: center;
+  padding: 30px;
+  font-size: 0.9em;
+  color: #94a3b8;
+}
+#bgAnim {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: radial-gradient(circle at 20% 20%, #1e3a8a33 0%, transparent 60%),
+              radial-gradient(circle at 80% 80%, #0284c733 0%, transparent 60%);
+  animation: moveBg 10s infinite alternate;
+}
+@keyframes moveBg {
+  0% { background-position: 20% 20%, 80% 80%; }
+  100% { background-position: 30% 30%, 70% 70%; }
+}
 </style>
 </head>
 <body>
-<h1>🧠 Prompts Dealer</h1>
-<div class="category"><h2>Startup Ideas</h2><div class="prompt">Act as a startup mentor. Help me develop a business plan for a platform that connects mental health professionals with clients globally. Include market analysis, revenue models, and growth strategies.</div><div class="prompt">You're a VC advisor. Generate a pitch deck outline for a startup that offers AI-powered personal finance tracking for Gen Z users, focusing on savings and micro-investments.</div><div class="prompt">Help me launch a remote team management SaaS tool. What are the core features, pricing models, and GTM strategies?</div><div class="prompt">Develop a step-by-step guide for validating a startup idea in less than a week using MVP and user interviews.</div><div class="prompt">You are Y Combinator. What questions would you ask a solo founder building a crypto payroll platform?</div><div class="prompt">Help me craft a cold email pitch to angel investors for my mental health startup targeting teens.</div><div class="prompt">Design a roadmap for a one-person SaaS startup: idea, MVP, beta testing, and user acquisition.</div><div class="prompt">Create a viral growth strategy for a new language learning mobile app targeting Southeast Asia.</div><div class="prompt">Suggest 3 niche underserved markets for launching a subscription box business.</div><div class="prompt">What are the first 5 hires I should make after launching a B2B startup with early traction?</div><div class="prompt">I'm building a web app for freelancers to find AI tools. Help me define core features and monetization.</div><div class="prompt">Write a product spec for a startup that delivers personalized skincare regimens using AI.</div><div class="prompt">How would I run Facebook Ads to validate a marketplace startup idea quickly and cheaply?</div><div class="prompt">Give me 10 startup ideas that combine generative AI with education or learning.</div><div class="prompt">Write a prompt for ChatGPT that can simulate user behavior on a startup website for testing.</div><div class="prompt">I want to create a vertical social network for chefs. What are the critical early features?</div><div class="prompt">Outline a GTM strategy for a mobile app that helps creators monetize short-form content.</div><div class="prompt">How can I build a waitlist of 10,000+ users before launching my startup?</div><div class="prompt">Generate a prompt for ChatGPT to simulate customer support for an early SaaS startup.</div><div class="prompt">Write a competitor analysis comparing a new AI tool vs Notion AI, Jasper, and Copy.ai.</div></div><div class="category"><h2>Marketing & Ads</h2><div class="prompt">Act as a growth marketer. Create a multi-channel campaign to launch a new eco-friendly sneaker brand targeting Gen Z.</div><div class="prompt">You're a copywriter. Write 3 high-converting Facebook Ad headlines for a personal development course.</div><div class="prompt">Design an email marketing funnel for an online art class. Include subject lines and call-to-action.</div><div class="prompt">Suggest 10 viral TikTok video concepts for promoting a productivity mobile app.</div><div class="prompt">Help me create an SEO content calendar for a website that sells digital planners.</div><div class="prompt">What’s the perfect cold DM message on Instagram for reaching micro-influencers in the fitness niche?</div><div class="prompt">Create a full launch strategy for an indie iOS app including Reddit, Twitter, and newsletters.</div><div class="prompt">Generate a detailed Google Ads plan for a new e-commerce skincare brand with a $500/month budget.</div><div class="prompt">You are a brand strategist. Create a tone of voice guide for a mental health mobile app.</div><div class="prompt">I’m launching a digital product (Notion templates). What’s the best way to go viral on Twitter?</div><div class="prompt">Create a list of 15 newsletter names for a tech-curious Gen Z audience.</div><div class="prompt">Write 3 unique value propositions for a SaaS tool that helps freelancers invoice clients.</div><div class="prompt">Suggest 5 types of lead magnets to collect emails for an AI photo enhancement app.</div><div class="prompt">Design an affiliate marketing strategy for a platform that connects virtual assistants with founders.</div><div class="prompt">Write a product description for a Shopify product page that boosts SEO and conversions.</div><div class="prompt">Help me A/B test two landing pages for a free meditation challenge. What should I measure?</div><div class="prompt">Create a social media calendar template for a solopreneur using Twitter, IG, and LinkedIn.</div><div class="prompt">What are the best communities to post in to get early traction for a digital product?</div><div class="prompt">Act like Neil Patel. How would you drive traffic to a new blog with no backlinks?</div><div class="prompt">Help me define a clear brand story for a lifestyle accessories company started by two sisters.</div></div>
-<footer style="text-align:center; margin-top: 50px;">
-  <p>© 2025 Prompts Dealer — All prompts generated with ❤️</p>
+<div class="presentation"><h1>UNLEASH YOUR AI POWER</h1></div>
+<div id="bgAnim"></div>
+<header>
+  <div class="logo">Prompts Dealer</div>
+  <button class="mode-toggle" onclick="toggleMode()">🌙 / ☀️</button>
+</header>
+<main>
+  <h2>Need AI Prompts?</h2>
+  <p>Choose a category and get powerful ready-to-use prompts.</p>
+  <div class="categories" id="categoryList">
+    <button class="category" onclick="selectCategory('Content Creation')">Content Creation</button>
+    <button class="category" onclick="selectCategory('Coding')">Coding</button>
+    <button class="category" onclick="selectCategory('Marketing')">Marketing</button>
+    <button class="category" onclick="selectCategory('Business Strategy')">Business Strategy</button>
+    <button class="category" onclick="selectCategory('Research')">Research</button>
+  </div>
+  <div class="prompt-box" id="promptBox" style="display:none;">
+    <pre id="promptText"></pre>
+    <button class="copy" onclick="copyPrompt()">Copy</button>
+    <button class="generate" onclick="generatePrompt()">Generate More</button>
+  </div>
+</main>
+<footer>
+  © 2025 Prompts Dealer – Made with passion by MADIOUNY
 </footer>
-</body></html>
+<script>
+const prompts = {
+  "Content Creation": [
+    "Act as a content strategist. Generate a 1-week content plan for a travel blog focused on solo female travelers.",
+    "Write a viral tweet thread about AI tools every digital creator should know."
+  ],
+  "Coding": [
+    "Write a Python script to scrape all product names and prices from an e-commerce site (Amazon style), and export them to CSV.",
+    "Generate a full-stack app idea with React frontend and Flask backend that helps users organize daily goals with motivational quotes."
+  ],
+  "Marketing": [
+    "Create a product launch email for a new AI-powered design tool targeting startup founders.",
+    "Write 5 social media posts promoting a limited-time offer for a SaaS productivity app."
+  ],
+  "Business Strategy": [
+    "Design a SWOT analysis for a startup offering AI consulting for SMEs in the healthcare sector.",
+    "Give a 3-month go-to-market plan for launching a language learning mobile app in the MENA region."
+  ],
+  "Research": [
+    "Summarize 3 recent peer-reviewed papers on the environmental impact of AI training models.",
+    "Provide a detailed overview of top competitors in the prompt engineering tool space."
+  ]
+};
+
+let selected = "";
+function selectCategory(cat) {
+  selected = cat;
+  generatePrompt();
+  document.getElementById("promptBox").style.display = "block";
+}
+function generatePrompt() {
+  const arr = prompts[selected];
+  const rand = Math.floor(Math.random() * arr.length);
+  document.getElementById("promptText").textContent = arr[rand];
+}
+function copyPrompt() {
+  const txt = document.getElementById("promptText").textContent;
+  navigator.clipboard.writeText(txt);
+  alert("Prompt copied!");
+}
+function toggleMode() {
+  const b = document.body;
+  if (b.style.background.includes('linear')) {
+    b.style.background = "#f1f5f9";
+    b.style.color = "#0f172a";
+  } else {
+    b.style.background = "linear-gradient(130deg, #0f172a, #1e293b)";
+    b.style.color = "#fff";
+  }
+}
+</script>
+</body>
+</html>
