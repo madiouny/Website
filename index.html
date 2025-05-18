@@ -3,456 +3,440 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Prompts Dealer</title>
+<title>Prompts Dealer — Inspired by Framer</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
   /* Reset */
   * {
     margin: 0; padding: 0; box-sizing: border-box;
   }
-  body {
-    font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(135deg, #d0f0ff 0%, #e0fff9 100%);
-    min-height: 100vh;
+
+  body, html {
+    height: 100%;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #eee;
     overflow-x: hidden;
-    color: #02475e;
-    position: relative;
   }
-  /* Water drops container */
-  .drops {
+
+  /* Animated gradient background */
+  body::before {
+    content: "";
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-  }
-  .drop {
-    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, #0fffc1, #f72585, #4361ee, #720026, #560bad);
+    background-size: 1000% 1000%;
+    animation: gradientMove 30s linear infinite;
+    opacity: 0.12;
+    z-index: -1;
+    filter: blur(80px);
     border-radius: 50%;
-    opacity: 0.15;
-    animation-name: dropmove, dropfade;
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
   }
-  @keyframes dropmove {
-    0% {
-      transform: translateY(-50px) scale(1);
-      opacity: 0.15;
-    }
-    50% {
-      opacity: 0.3;
-    }
-    100% {
-      transform: translateY(110vh) scale(0.7);
-      opacity: 0;
-    }
+
+  @keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
   }
-  @keyframes dropfade {
-    0%,100% {opacity: 0.15;}
-    50% {opacity: 0.3;}
+
+  /* Container */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    text-align: center;
   }
-  /* Generate multiple drops with different sizes, positions, delays, durations */
-  /* We'll create 30 drops */
-  /* Using inline style in JS for randomness */
-  
-  /* Header with animated logo */
-  header {
-    position: relative;
-    z-index: 10;
-    padding: 20px 40px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: rgba(255 255 255 / 0.8);
-    box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
-    backdrop-filter: saturate(180%) blur(15px);
-  }
+
+  /* Logo */
   .logo {
     font-weight: 700;
-    font-size: 1.8rem;
-    color: #0277bd;
-    position: relative;
-    overflow: visible;
-    cursor: default;
-  }
-  /* Water wave behind text */
-  .logo::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: -10px;
-    width: 40px;
-    height: 20px;
-    background: linear-gradient(90deg, #60d1ff 0%, #27a9e1 100%);
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    filter: blur(5px);
-    opacity: 0.5;
-    animation: wave 3s ease-in-out infinite alternate;
-    transform-origin: center center;
-    z-index: -1;
-  }
-  @keyframes wave {
-    0% { transform: translateX(0) scaleX(1); }
-    100% { transform: translateX(8px) scaleX(1.1); }
-  }
-
-  /* Main container */
-  main {
-    z-index: 10;
-    position: relative;
-    max-width: 900px;
-    margin: 40px auto 80px auto;
-    background: rgba(255 255 255 / 0.95);
-    border-radius: 14px;
-    box-shadow: 0 16px 32px rgb(0 0 0 / 0.1);
-    padding: 30px 40px;
-  }
-  h1 {
-    font-weight: 700;
-    font-size: 2.2rem;
-    margin-bottom: 18px;
-    color: #01405a;
-  }
-  p.description {
-    font-size: 1.1rem;
-    color: #02506d;
-    margin-bottom: 28px;
-  }
-
-  /* Categories list */
-  .categories {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    margin-bottom: 36px;
-  }
-  .category-btn {
-    flex: 1 1 calc(33.333% - 12px);
-    background: #0277bd;
-    color: white;
-    border: none;
-    padding: 14px 22px;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-align: center;
+    font-size: 2.5rem;
+    color: #0fffc1;
+    letter-spacing: 3px;
+    margin-bottom: 3rem;
+    text-shadow:
+      0 0 8px #0fffc1,
+      0 0 20px #0fffc1;
+    animation: glowPulse 3s ease-in-out infinite;
     user-select: none;
   }
-  .category-btn:hover,
-  .category-btn.active {
-    background: #014a75;
+
+  @keyframes glowPulse {
+    0%, 100% {
+      text-shadow:
+        0 0 8px #0fffc1,
+        0 0 20px #0fffc1;
+      color: #0fffc1;
+    }
+    50% {
+      text-shadow:
+        0 0 16px #f72585,
+        0 0 40px #f72585;
+      color: #f72585;
+    }
+  }
+
+  /* Heading and subtitle */
+  h1 {
+    font-size: 2.1rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  p.subtitle {
+    font-weight: 400;
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+    color: #ccc;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Buttons */
+  .btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 1.4rem;
+    flex-wrap: wrap;
+  }
+
+  button {
+    background: transparent;
+    border: 2px solid #0fffc1;
+    color: #0fffc1;
+    padding: 0.8rem 2.2rem;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+  }
+
+  button:hover {
+    background: #0fffc1;
+    color: #111;
+    box-shadow:
+      0 0 8px #0fffc1,
+      0 0 20px #0fffc1;
   }
 
   /* Prompt box */
   .prompt-box {
-    background: #e3f6ff;
-    border-radius: 12px;
-    padding: 20px 24px;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 1.05rem;
-    line-height: 1.4;
-    min-height: 160px;
-    color: #01405a;
-    white-space: pre-wrap;
-    user-select: text;
-    box-shadow: inset 0 0 12px #92d6ffcc;
+    margin-top: 3rem;
+    background: rgba(255,255,255,0.07);
+    border-radius: 15px;
+    padding: 2rem 2rem 3rem;
+    color: #eee;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    max-height: 260px;
+    overflow-y: auto;
     position: relative;
+    box-shadow:
+      inset 0 0 30px rgba(255,255,255,0.1);
   }
 
-  /* Buttons below prompt */
-  .prompt-actions {
-    margin-top: 18px;
-    display: flex;
-    gap: 14px;
-    justify-content: flex-start;
-  }
-  button.copy-btn, button.generate-btn {
-    background: #0277bd;
+  /* Copy button */
+  .copy-btn {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    background: #f72585;
     border: none;
-    color: white;
-    padding: 10px 22px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    user-select: none;
-  }
-  button.copy-btn:hover, button.generate-btn:hover {
-    background: #014a75;
-  }
-  /* Footer */
-  footer {
-    position: fixed;
-    bottom: 0; left: 0; width: 100%;
-    background: rgba(255 255 255 / 0.9);
-    text-align: center;
-    padding: 14px 10px;
-    font-size: 0.9rem;
-    color: #01405a;
-    box-shadow: 0 -4px 6px rgb(0 0 0 / 0.05);
-    font-weight: 600;
-    user-select: none;
-  }
-  footer span.heart {
-    color: #e84c4c;
+    padding: 6px 14px;
+    border-radius: 30px;
     font-weight: 700;
-    margin-left: 6px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    user-select: none;
+  }
+
+  .copy-btn:hover {
+    background: #d21357;
+  }
+
+  /* Generate more button */
+  .generate-btn {
+    margin-top: 2rem;
+    background: #4361ee;
+    border: none;
+    padding: 0.9rem 3rem;
+    border-radius: 40px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    user-select: none;
+  }
+
+  .generate-btn:hover {
+    background: #2a3eb1;
   }
 
   /* Dark mode toggle */
   .dark-toggle {
     position: fixed;
-    top: 22px;
-    right: 22px;
-    z-index: 15;
-    background: #0277bd;
-    border: none;
-    color: white;
-    font-weight: 700;
-    padding: 10px 16px;
-    border-radius: 20px;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: 2px solid #0fffc1;
+    color: #0fffc1;
+    padding: 0.5rem 1rem;
+    border-radius: 40px;
     cursor: pointer;
+    font-weight: 700;
+    transition: all 0.3s ease;
     user-select: none;
-    box-shadow: 0 4px 10px rgb(2 119 189 / 0.5);
-    transition: background-color 0.3s ease;
+    z-index: 1000;
   }
+
   .dark-toggle:hover {
-    background: #014a75;
+    background: #0fffc1;
+    color: #111;
   }
 
   /* Dark mode styles */
   body.dark {
-    background: linear-gradient(135deg, #022c3e 0%, #013445 100%);
-    color: #a8cfe5;
+    background: #0e1117;
+    color: #ccc;
   }
-  body.dark main {
-    background: rgba(2 35 56 / 0.9);
-    box-shadow: 0 16px 32px rgb(0 0 0 / 0.5);
-    color: #cde4ff;
+  body.dark::before {
+    opacity: 0.2;
   }
-  body.dark .category-btn {
-    background: #055a8c;
-    color: #cde4ff;
+  body.dark .logo {
+    color: #f72585;
+    text-shadow:
+      0 0 8px #f72585,
+      0 0 20px #f72585;
+    animation-name: glowPulseDark;
   }
-  body.dark .category-btn:hover,
-  body.dark .category-btn.active {
-    background: #033d5a;
+  @keyframes glowPulseDark {
+    0%, 100% {
+      text-shadow:
+        0 0 8px #f72585,
+        0 0 20px #f72585;
+      color: #f72585;
+    }
+    50% {
+      text-shadow:
+        0 0 16px #0fffc1,
+        0 0 40px #0fffc1;
+      color: #0fffc1;
+    }
   }
-  body.dark .prompt-box {
-    background: #01405a;
-    color: #d2e6ff;
-    box-shadow: inset 0 0 15px #0277bdaa;
+  body.dark button {
+    border-color: #f72585;
+    color: #f72585;
   }
-  body.dark button.copy-btn, body.dark button.generate-btn {
-    background: #055a8c;
+  body.dark button:hover {
+    background: #f72585;
+    color: #111;
+    box-shadow:
+      0 0 8px #f72585,
+      0 0 20px #f72585;
   }
-  body.dark button.copy-btn:hover, body.dark button.generate-btn:hover {
-    background: #033d5a;
+  body.dark .copy-btn {
+    background: #0fffc1;
+    color: #111;
   }
-  body.dark footer {
-    background: rgba(2 35 56 / 0.9);
-    color: #cde4ff;
-    box-shadow: 0 -4px 6px rgb(0 0 0 / 0.8);
+  body.dark .copy-btn:hover {
+    background: #06b2a0;
+  }
+  body.dark .generate-btn {
+    background: #f72585;
+  }
+  body.dark .generate-btn:hover {
+    background: #b20d5b;
   }
 
+  /* Scrollbar for prompt box */
+  .prompt-box::-webkit-scrollbar {
+    width: 8px;
+  }
+  .prompt-box::-webkit-scrollbar-thumb {
+    background: #0fffc1;
+    border-radius: 20px;
+  }
 </style>
 </head>
 <body>
-<div class="drops" aria-hidden="true"></div>
+<button class="dark-toggle" aria-label="Toggle Dark Mode">Dark Mode</button>
 
-<header>
-  <div class="logo" title="Prompts Dealer">💧Prompts Dealer</div>
-  <button class="dark-toggle" aria-label="Toggle dark mode">🌙</button>
-</header>
+<div class="container">
+  <div class="logo" aria-label="Prompts Dealer Logo">Prompts Dealer</div>
+  <h1>Unleash Your Creativity</h1>
+  <p class="subtitle">Explore a rich library of AI prompts, crafted for every need and mood. Select a category to get started.</p>
 
-<main>
-  <h1>Choose a category to get AI prompts</h1>
-  <p class="description">Select one category below, then get inspired by high-quality GPT prompts crafted just for you.</p>
-
-  <div class="categories" role="list" aria-label="Prompt categories">
-    <!-- Buttons inserted by JS -->
+  <div class="btn-group" role="group" aria-label="Prompt Categories">
+    <button data-category="writing">Writing</button>
+    <button data-category="marketing">Marketing</button>
+    <button data-category="coding">Coding</button>
+    <button data-category="productivity">Productivity</button>
   </div>
 
-  <div class="prompt-box" tabindex="0" aria-live="polite" aria-atomic="true" role="region">
-    Select a category to see a prompt here.
+  <div class="prompt-box" tabindex="0" aria-live="polite" aria-label="Prompt output">
+    Please select a category to generate a prompt.
   </div>
 
-  <div class="prompt-actions">
-    <button class="copy-btn" aria-label="Copy prompt to clipboard">Copy Prompt</button>
-    <button class="generate-btn" aria-label="Generate another prompt from category" disabled>Generate More</button>
-  </div>
-</main>
-
-<footer>
-  © 2025 Prompts Dealer &nbsp;|&nbsp; Made with passion by MADIOUNY <span class="heart">❤️</span>
-</footer>
+  <button class="copy-btn" aria-label="Copy prompt to clipboard">Copy</button>
+  <button class="generate-btn" aria-label="Generate another prompt">Generate More</button>
+</div>
 
 <script>
-  // Water drops generation
-  const dropsContainer = document.querySelector('.drops');
-  const dropCount = 30;
-  const colors = ['#60d1ff','#27a9e1','#a1e9ff','#78d5f5'];
-
-  for(let i=0; i < dropCount; i++){
-    const drop = document.createElement('div');
-    drop.classList.add('drop');
-    const size = 6 + Math.random()*8;
-    drop.style.width = size + 'px';
-    drop.style.height = size*1.5 + 'px';
-    drop.style.left = Math.random()*100 + 'vw';
-    drop.style.top = (-50 - Math.random()*50) + 'px';
-    drop.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
-    drop.style.animationDuration = (12 + Math.random()*10) + 's';
-    drop.style.animationDelay = (Math.random()*15) + 's';
-    dropsContainer.appendChild(drop);
-  }
-
-  // Categories & Prompts data
-  const categories = {
-    "Writing": [
-      "Write a detailed story about a futuristic city where AI governs the society.",
-      "Describe an emotional reunion between two long-lost friends after 20 years.",
-      "Create a poem about the changing seasons with vivid imagery.",
-      "Compose a letter from a time traveler to their past self.",
-      "Develop a plot for a mystery novel involving a hidden treasure.",
-      "Explain the importance of empathy in leadership.",
-      "Write a dialogue between a human and an AI debating ethics.",
-      "Describe a peaceful garden that changes with the viewer's mood.",
-      "Create an inspiring speech for a young activist.",
-      "Invent a myth explaining the origins of the stars.",
-      "Draft a user manual for an imaginary device that controls dreams.",
-      "Write a journal entry from the perspective of a space explorer.",
-      "Describe the sensation of time slowing down during a crisis.",
-      "Compose a haiku about urban life.",
-      "Develop a character sketch for a detective with a secret past.",
-      "Write an article about the impact of AI on art.",
-      "Describe the feelings of a child on their first day at school.",
-      "Invent a fable teaching the value of patience.",
-      "Write a futuristic news report about a breakthrough in renewable energy.",
-      "Create a vivid description of a festival celebrating peace."
+  const prompts = {
+    writing: [
+      `Write a heartfelt letter from the perspective of a soldier stationed abroad, expressing his longing and hopes for the future.`,
+      `Create a vivid description of a bustling futuristic city at night, focusing on sensory details and atmosphere.`,
+      `Compose a poem that captures the beauty and melancholy of autumn leaves falling in a quiet park.`,
+      `Develop a short story plot centered on a mysterious stranger arriving in a small town with a secret.`,
+      `Write a dialogue between two old friends reuniting after decades apart, revealing their changed lives.`,
+      `Describe an imaginary world where time flows backward and how its inhabitants cope with this phenomenon.`,
+      `Write a motivational speech encouraging people to overcome fear and embrace change.`,
+      `Craft a scene where a character faces a difficult moral dilemma and must make a life-altering decision.`,
+      `Write an essay discussing the impact of technology on human relationships in the 21st century.`,
+      `Create a character profile for a detective who uses unconventional methods to solve crimes.`,
+      `Write a descriptive passage about the first snowfall of winter and its emotional significance.`,
+      `Compose a narrative about a journey through a mysterious forest filled with magical creatures.`,
+      `Write a letter from the perspective of a future AI reflecting on its relationship with humanity.`,
+      `Develop a scene where a protagonist discovers a hidden talent that changes their life.`,
+      `Write a reflective journal entry from someone who just moved to a new city.`,
+      `Describe the sounds and smells of a lively market in a foreign country.`,
+      `Craft a suspenseful opening paragraph for a thriller novel set on a stormy night.`,
+      `Write a story about a lost item that brings unexpected connections between strangers.`,
+      `Create a vivid description of a sunrise over a mountain range seen from a cabin.`,
+      `Write a letter from a child to their future self, sharing hopes and dreams.`,
     ],
-    "Coding": [
-      "Write a Python script that scrapes weather data from a website.",
-      "Explain how recursion works with a simple example in JavaScript.",
-      "Develop a React component for a dark mode toggle button.",
-      "Create a SQL query that finds the top 5 customers by purchase amount.",
-      "Write a function in Java that reverses a string.",
-      "Explain the concept of closures with a practical JavaScript example.",
-      "Develop a CSS animation for a bouncing ball.",
-      "Write a REST API endpoint in Node.js for user authentication.",
-      "Create a script to automate file backups on Linux.",
-      "Explain how promises work in JavaScript with an example.",
-      "Write a C++ class for a basic calculator supporting add, subtract, multiply, and divide.",
-      "Develop a Python function to merge two dictionaries.",
-      "Create a bash script to monitor system CPU usage.",
-      "Explain the difference between synchronous and asynchronous code.",
-      "Write a function to validate an email address using regex.",
-      "Develop a Vue.js app showing a list of todo items with add and delete features.",
-      "Explain how Git branching works with examples.",
-      "Write a program to implement a binary search algorithm.",
-      "Create a CSS grid layout for a responsive photo gallery.",
-      "Write a script to convert JSON data into CSV format."
+    marketing: [
+      `Draft a compelling social media post promoting a new eco-friendly product line.`,
+      `Create an email newsletter introducing a limited-time offer with a strong call to action.`,
+      `Write a catchy slogan for a startup focused on sustainable fashion.`,
+      `Develop a pitch for investors highlighting the unique value proposition of a tech app.`,
+      `Compose a product description emphasizing benefits and features of a health supplement.`,
+      `Write a blog post outline about trends in digital marketing for small businesses.`,
+      `Create engaging ad copy for a holiday sale targeting young adults.`,
+      `Develop a case study summary showcasing a successful client campaign.`,
+      `Write a press release announcing a partnership between two leading companies.`,
+      `Craft a testimonial quote from a satisfied customer for a beauty brand.`,
+      `Create a script for a 30-second promotional video for a fitness app.`,
+      `Write content for a landing page designed to boost webinar signups.`,
+      `Develop an influencer outreach email to promote a new gadget.`,
+      `Compose a message encouraging users to leave positive reviews on app stores.`,
+      `Create headlines for a series of online ads for a travel agency.`,
+      `Write a value proposition statement for a financial planning service.`,
+      `Draft a FAQ section for a new software product.`,
+      `Develop content for a brochure promoting a luxury real estate development.`,
+      `Write a LinkedIn post celebrating a company milestone and thanking customers.`,
+      `Create taglines for a campaign raising awareness about mental health.`,
     ],
-    "Design": [
-      "Create a mood board for a modern tech startup branding.",
-      "Describe a user interface for a meditation mobile app.",
-      "Develop a color palette suitable for a nature-themed website.",
-      "Explain the principles of minimalist design with examples.",
-      "Design an icon set for social media platforms.",
-      "Create wireframes for a fitness tracking dashboard.",
-      "Describe the user journey for an e-commerce checkout process.",
-      "Develop a typography hierarchy for a blog site.",
-      "Explain the use of negative space in visual design.",
-      "Design a landing page for a product launch.",
-      "Create a branding guide for a luxury hotel chain.",
-      "Describe how to design accessible web forms.",
-      "Develop a style guide for a healthcare application.",
-      "Explain the psychology behind color choices in marketing.",
-      "Design a logo for a charity organization.",
-      "Create a prototype for a virtual reality shopping experience.",
-      "Describe how to optimize images for web performance.",
-      "Develop a storyboard for an animated explainer video.",
-      "Explain grid systems and their importance in layout design.",
-      "Design packaging for an eco-friendly product."
+    coding: [
+      `Write a Python script to scrape headlines from a news website and save them to a CSV file.`,
+      `Create a responsive navigation bar using HTML, CSS, and JavaScript.`,
+      `Develop a function in JavaScript that debounces user input to optimize performance.`,
+      `Explain the concept of closures in JavaScript with examples.`,
+      `Write a SQL query to find customers who made purchases over $1000 in the last month.`,
+      `Create a REST API endpoint in Node.js that returns a list of products in JSON format.`,
+      `Write a CSS animation that makes a button pulse when hovered.`,
+      `Develop a React component that fetches and displays user data from an API.`,
+      `Explain how to use async/await in JavaScript with a simple data fetch example.`,
+      `Write a program to implement a binary search algorithm in Java.`,
+      `Create a function in Python that validates email addresses using regular expressions.`,
+      `Write a script that automates image optimization for a website using a command-line tool.`,
+      `Develop a Flutter app screen showing a list of items with swipe-to-delete functionality.`,
+      `Explain the difference between REST and GraphQL APIs.`,
+      `Write a JavaScript function to convert temperatures between Celsius and Fahrenheit.`,
+      `Create a CSS grid layout for a photo gallery with responsive breakpoints.`,
+      `Develop a Python script that sends automated emails based on user activity.`,
+      `Write a tutorial for beginners on setting up a basic Express server.`,
+      `Explain the concept of event bubbling in JavaScript with an example.`,
+      `Create a command-line tool in Go that parses log files and summarizes errors.`,
+    ],
+    productivity: [
+      `Write a daily planner template that includes time blocking and priority setting.`,
+      `Create a checklist for effective remote work habits and best practices.`,
+      `Develop a morning routine guide that boosts energy and focus throughout the day.`,
+      `Write tips for minimizing distractions when working from home.`,
+      `Create a strategy for setting and tracking SMART goals.`,
+      `Develop a system for managing email inbox overload effectively.`,
+      `Write advice on how to conduct productive meetings with clear agendas.`,
+      `Create a template for weekly reflection and planning for personal growth.`,
+      `Develop techniques for improving concentration during long study sessions.`,
+      `Write about the benefits of using the Pomodoro technique for time management.`,
+      `Create a guide on prioritizing tasks using the Eisenhower matrix.`,
+      `Write strategies for building and maintaining healthy work-life boundaries.`,
+      `Develop tips for effective delegation and team collaboration.`,
+      `Create a habit tracker template to support goal achievement.`,
+      `Write advice on digital detoxing and reducing screen time.`,
+      `Develop methods for organizing digital files and folders efficiently.`,
+      `Create a guide for using mind mapping to brainstorm ideas.`,
+      `Write about techniques to boost creativity during work breaks.`,
+      `Develop a system for tracking progress on long-term projects.`,
+      `Create a motivational message to start each workday positively.`,
     ]
   };
 
-  const categoriesContainer = document.querySelector('.categories');
+  const container = document.querySelector('.container');
   const promptBox = document.querySelector('.prompt-box');
   const copyBtn = document.querySelector('.copy-btn');
   const generateBtn = document.querySelector('.generate-btn');
+  const categoryButtons = document.querySelectorAll('.btn-group button');
   const darkToggle = document.querySelector('.dark-toggle');
 
   let currentCategory = null;
-  let lastPromptIndex = null;
+  let currentPrompt = '';
 
-  // Create category buttons
-  for (const cat in categories) {
-    const btn = document.createElement('button');
-    btn.className = 'category-btn';
-    btn.textContent = cat;
-    btn.type = 'button';
-    btn.setAttribute('aria-pressed', 'false');
+  function getRandomPrompt(category) {
+    const list = prompts[category];
+    const randomIndex = Math.floor(Math.random() * list.length);
+    return list[randomIndex];
+  }
+
+  function updatePrompt(category) {
+    currentPrompt = getRandomPrompt(category);
+    promptBox.textContent = currentPrompt;
+  }
+
+  categoryButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-      selectCategory(cat, btn);
+      currentCategory = btn.dataset.category;
+      updatePrompt(currentCategory);
+      generateBtn.style.display = 'inline-block';
+      copyBtn.style.display = 'inline-block';
+
+      categoryButtons.forEach(b => b.style.opacity = '0.5');
+      btn.style.opacity = '1';
     });
-    categoriesContainer.appendChild(btn);
-  }
-
-  function selectCategory(cat, btn) {
-    currentCategory = cat;
-    lastPromptIndex = null;
-    promptBox.textContent = 'Loading prompt...';
-    generateBtn.disabled = false;
-
-    // Update active states
-    document.querySelectorAll('.category-btn').forEach(b => {
-      b.classList.remove('active');
-      b.setAttribute('aria-pressed', 'false');
-    });
-    btn.classList.add('active');
-    btn.setAttribute('aria-pressed', 'true');
-
-    setTimeout(() => {
-      showNewPrompt();
-    }, 300);
-  }
-
-  function showNewPrompt() {
-    if (!currentCategory) return;
-    const prompts = categories[currentCategory];
-    let index;
-    do {
-      index = Math.floor(Math.random() * prompts.length);
-    } while (index === lastPromptIndex && prompts.length > 1);
-    lastPromptIndex = index;
-    promptBox.textContent = prompts[index];
-  }
-
-  copyBtn.addEventListener('click', () => {
-    if (promptBox.textContent && promptBox.textContent !== 'Select a category to see a prompt here.' && promptBox.textContent !== 'Loading prompt...') {
-      navigator.clipboard.writeText(promptBox.textContent).then(() => {
-        copyBtn.textContent = 'Copied!';
-        setTimeout(() => { copyBtn.textContent = 'Copy Prompt'; }, 1500);
-      });
-    }
   });
 
   generateBtn.addEventListener('click', () => {
-    showNewPrompt();
+    if (!currentCategory) return;
+    updatePrompt(currentCategory);
+  });
+
+  copyBtn.addEventListener('click', () => {
+    if (!currentPrompt) return;
+    navigator.clipboard.writeText(currentPrompt).then(() => {
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => {
+        copyBtn.textContent = 'Copy';
+      }, 1500);
+    });
   });
 
   darkToggle.addEventListener('click', () => {
     document.body.classList.toggle('dark');
-    if(document.body.classList.contains('dark')) {
-      darkToggle.textContent = '☀️';
-      darkToggle.setAttribute('aria-label', 'Toggle light mode');
-    } else {
-      darkToggle.textContent = '🌙';
-      darkToggle.setAttribute('aria-label', 'Toggle dark mode');
-    }
   });
+
+  generateBtn.style.display = 'none';
+  copyBtn.style.display = 'none';
 </script>
 </body>
 </html>
