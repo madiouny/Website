@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prompts Dealer - Pro Style</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+  /* Reset and basics */
+  * {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0;
+    height: 100%;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+      Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background: #0f172a;
+    color: #fff;
+    overflow-x: hidden;
+  }
+
+  /* Background image + gradient overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background:
+      linear-gradient(130deg, rgba(15,23,42,0.8), rgba(30,41,59,0.8)),
+      url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
+    z-index: -2;
+    filter: brightness(0.7);
+    animation: bgShift 30s ease-in-out infinite alternate;
+  }
+
+  /* Animated shapes like Framer's background */
+  #bgAnim {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: -1;
+    background:
+      radial-gradient(circle at 15% 20%, #38bdf833 0%, transparent 70%),
+      radial-gradient(circle at 80% 80%, #8b5cf633 0%, transparent 70%);
+    animation: moveBg 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes moveBg {
+    0% {
+      background-position: 15% 20%, 80% 80%;
+    }
+    100% {
+      background-position: 25% 30%, 70% 70%;
+    }
+  }
+
+  @keyframes bgShift {
+    0% { filter: brightness(0.7) saturate(0.9); }
+    50% { filter: brightness(0.85) saturate(1.1); }
+    100% { filter: brightness(0.7) saturate(0.9); }
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 48px;
+    font-weight: 700;
+    font-size: 1.4rem;
+  }
+
+  .logo {
+    background: linear-gradient(45deg, #38bdf8, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .mode-toggle {
+    background: none;
+    border: 2px solid #38bdf8;
+    border-radius: 8px;
+    color: #38bdf8;
+    padding: 8px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .mode-toggle:hover {
+    background: #38bdf8;
+    color: #0f172a;
+  }
+
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    text-align: center;
+  }
+
+  main h1 {
+    font-size: 3.2rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  main p {
+    font-weight: 400;
+    font-size: 1.2rem;
+    color: #94a3b8;
+    margin-bottom: 40px;
+  }
+
+  .categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+  }
+
+  button.category {
+    background: transparent;
+    border: 2px solid #38bdf8;
+    color: #38bdf8;
+    font-weight: 600;
+    padding: 14px 28px;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 180px;
+    white-space: normal;
+  }
+  button.category:hover {
+    background: #38bdf8;
+    color: #0f172a;
+  }
+
+  .prompt-box {
+    margin-top: 50px;
+    background: rgba(30,41,59,0.85);
+    padding: 28px 32px;
+    border-radius: 20px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 0 40px #38bdf8aa;
+    text-align: left;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    user-select: text;
+  }
+
+  .btn-row {
+    margin-top: 24px;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+  }
+
+  button.copy, button.generate {
+    background: #0ea5e9;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 700;
+    padding: 12px 28px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button.copy:hover, button.generate:hover {
+    background-color: #0284c7;
+  }
+
+  footer {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    padding: 36px 20px;
+    user-select: none;
+  }
+
+  @media (max-width: 600px) {
+    main h1 {
+      font-size: 2.4rem;
+    }
+    button.category {
+      min-width: 140px;
+      font-size: 1rem;
+      padding: 12px 20px;
+    }
+    .prompt-box {
+      font-size: 1rem;
+      padding: 20px 24px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div id="bgAnim"></div>
+  <header>
+    <div class="logo">Prompts Dealer Pro</div>
+    <button class="mode-toggle" onclick="toggleMode()">🌙 / ☀️</button>
+  </header>
+  <main>
+    <h1>Need Powerful AI Prompts?</h1>
+    <p>Select a category and get long, detailed, ready-to-use prompts for your AI projects.</p>
+    <div class="categories" id="categoryList">
+      <button class="category" onclick="selectCategory('Content Creation')">Content Creation</button>
+      <button class="category" onclick="selectCategory('Coding')">Coding</button>
+      <button class="category" onclick="selectCategory('Marketing')">Marketing</button>
+      <button class="category" onclick="selectCategory('Business Strategy')">Business Strategy</button>
+      <button class="category" onclick="selectCategory('Research')">Research</button>
+      <button class="category" onclick="selectCategory('Education')">Education</button>
+      <button class="category" onclick="selectCategory('Design')">Design</button>
+      <button class="category" onclick="selectCategory('Health & Wellness')">Health & Wellness</button>
+      <button class="category" onclick="selectCategory('Finance')">Finance</button>
+      <button class="category" onclick="selectCategory('Productivity')">Productivity</button>
+    </div>
+    <div class="prompt-box" id="promptBox" style="display:none;">
+      <pre id="promptText"></pre>
+      <div class="btn-row">
+        <button class="copy" onclick="copyPrompt()">Copy</button>
+        <button class="generate" onclick="generatePrompt()">Generate More</button>
+      </div>
+    </div>
+  </main>
+  <footer>
+    © 2025 Prompts Dealer – Made with passion by MADIOUNY
+  </footer>
+
+  <script>
+    const prompts = {
+      "Content Creation": [
+        `Create a comprehensive 7-day content calendar for a lifestyle blog targeting young professionals, including topics on productivity, wellness, and technology trends. Each day should have a clear theme, call-to-action ideas, and suggestions for multimedia elements such as images or videos.`,
+        `Draft a detailed article outline explaining the impact of social media algorithms on content visibility, and propose actionable strategies for creators to optimize their reach organically without paid ads.`,
+        `Generate an in-depth script for a YouTube video series on sustainable living practices that can be adopted by urban residents, including step-by-step guides, expert interviews, and resource links.`,
+        `Develop a content strategy for launching a new podcast focused on mental health awareness, specifying episode topics, guest profiles, and promotion techniques across social channels.`,
+        `Write a long-form blog post exploring the evolution of digital storytelling from blogs to immersive virtual reality experiences, highlighting key technologies and future trends.`,
+        `Design an email newsletter template and content plan for a monthly digest targeting creative freelancers, including sections for tips, client stories, and industry news.`,
+        `Compose a detailed tutorial for beginners on how to create engaging Instagram Reels, covering planning, filming, editing, and posting best practices to maximize engagement.`,
+        `Outline a comprehensive guide for brands on leveraging user-generated content in their marketing, including legal considerations, incentive programs, and case studies.`,
+        `Write an evergreen social media campaign plan to promote environmental awareness during Earth Month, with daily post ideas and community engagement tactics.`,
+        `Develop a strategy document for a multimedia content hub on emerging tech innovations, outlining content types, distribution channels, and collaboration opportunities.`,
+        `Craft a list of 20 creative blog post ideas focusing on health and nutrition tips for busy professionals, complete with catchy titles and SEO keywords.`,
+        `Generate a complete storyboard for an animated explainer video about blockchain technology, including scene descriptions, narration script, and visual style notes.`,
+        `Create a tutorial series outline teaching graphic design fundamentals for non-designers, covering tools, techniques, and practical projects.`,
+        `Write a comprehensive social media influencer outreach email template for brands launching new products, including personalization tips and follow-up sequences.`,
+        `Develop a plan for a live webinar series on entrepreneurship basics, specifying session topics, guest speakers, and audience engagement methods.`,
+        `Draft a detailed editorial calendar for a tech review website focusing on AI tools, including publication dates, themes, and review criteria.`,
+        `Outline a complete guide on creating and optimizing Pinterest boards for niche markets, including keyword research and pin design best practices.`,
+        `Generate a list of 15 long-tail keywords and blog post ideas for a travel blog targeting solo female travelers, emphasizing safety and cultural experiences.`,
+        `Compose a comprehensive case study on a successful crowdfunding campaign, analyzing marketing tactics, backer engagement, and lessons learned.`,
+        `Write a detailed guide for YouTubers on monetization strategies beyond ads, including sponsorships, merchandise, and fan memberships.`
+      ],
+
+      "Coding": [
+        `Develop a full-stack web application project plan using React for the frontend and Node.js/Express for the backend, including database schema, API endpoints, and user authentication flow.`,
+        `Write an in-depth tutorial on building a real-time chat application with WebSocket technology, covering both client-side and server-side implementations, scalability, and security considerations.`,
+        `Create a detailed guide on automated testing best practices in Python using pytest, including test organization, fixtures, mocking, and continuous integration setups.`,
+        `Design a step-by-step blueprint for deploying a machine learning model as a REST API using Flask, with code snippets, environment setup, and Docker containerization.`,
+        `Generate an explanation and example code for implementing OAuth 2.0 authentication in a single-page application, focusing on security and token refresh strategies.`,
+        `Write a comprehensive article on optimizing React performance through memoization, lazy loading, and code splitting, with benchmarking examples.`,
+        `Develop a guide on building a mobile app with Flutter that integrates Firebase for real-time data syncing and push notifications, including UI design tips.`,
+        `Create a tutorial on writing efficient SQL queries for complex reporting needs, with examples on joins, window functions, and indexing strategies.`,
+        `Draft a detailed checklist for code reviews in JavaScript projects, emphasizing readability, performance, security vulnerabilities, and style consistency.`,
+        `Explain how to build a CI/CD pipeline using GitHub Actions for a microservices architecture, detailing workflows, testing phases, and deployment triggers.`,
+        `Generate a tutorial on creating a custom VS Code extension, including manifest configuration, command registration, and UI elements integration.`,
+        `Write a comprehensive guide on container orchestration using Kubernetes, including cluster setup, deployment strategies, and scaling considerations.`,
+        `Develop an explanation of event-driven programming paradigms in Node.js, including use cases and async patterns like Promises and async/await.`,
+        `Create a step-by-step walkthrough for implementing GraphQL APIs with Apollo Server and client, including schema design and query optimization.`,
+        `Draft a best practices guide for securing REST APIs, covering authentication, rate limiting, data validation, and logging.`,
+        `Generate a detailed tutorial on writing efficient algorithms in C++ for competitive programming, including problem-solving strategies and code examples.`,
+        `Write an in-depth explanation of functional programming concepts in JavaScript, such as pure functions, immutability, and higher-order functions.`,
+        `Develop a guide on integrating third-party payment gateways like Stripe into e-commerce platforms, including backend and frontend implementation details.`,
+        `Create a comprehensive tutorial on building serverless applications with AWS Lambda, API Gateway, and DynamoDB, including deployment automation.`,
+        `Explain best practices for managing state in React applications using Redux Toolkit, including store setup, reducers, and middleware usage.`
+      ],
+
+      "Marketing": [
+        `Develop a comprehensive digital marketing strategy for a startup launching a new SaaS product, including target audience analysis, channel selection, content planning, and KPIs to track.`,
+        `Write a detailed guide on creating effective Facebook ad campaigns, covering audience targeting, ad creative best practices, budgeting, and performance analysis.`,
+        `Generate an email marketing automation workflow for a retail brand to nurture leads and convert them into customers, including segmentation, triggers, and messaging.`,
+        `Draft a step-by-step influencer marketing plan for a fashion brand, including influencer selection criteria, outreach templates, contract terms, and campaign measurement.`,
+        `Create a content marketing calendar focused on seasonal campaigns and product launches, incorporating blog posts, videos, social media, and PR efforts.`,
+        `Design a buyer persona template with detailed demographic, psychographic, and behavioral traits for B2B marketing campaigns targeting tech decision-makers.`,
+        `Write a comprehensive SEO audit checklist and action plan to improve organic search rankings, including site structure, keyword optimization, backlinks, and technical fixes.`,
+        `Generate a long-form guide on storytelling in branding, with examples of emotional connection, brand voice development, and multi-channel consistency.`,
+        `Develop a PPC advertising strategy for Google Ads, including keyword research, ad copywriting, bidding strategies, and conversion tracking setup.`,
+        `Create a social media crisis management protocol for brands, outlining response templates, escalation procedures, and reputation monitoring tools.`,
+        `Draft a plan for launching a webinar series as a lead generation tool, including topic ideation, promotional tactics, and follow-up sequences.`,
+        `Write a comprehensive case study analyzing a viral marketing campaign, identifying key success factors and lessons for future campaigns.`,
+        `Develop a guide on leveraging LinkedIn for B2B lead generation, including profile optimization, content sharing strategies, and networking best practices.`,
+        `Create an outline for a multi-channel loyalty program to boost customer retention, including reward tiers, communication plans, and technology requirements.`,
+        `Generate a detailed competitor analysis template for digital marketing, including traffic sources, keyword strategies, content themes, and ad spend estimations.`,
+        `Write a tutorial on setting up Google Analytics goals and funnels to measure user journeys and campaign effectiveness.`,
+        `Develop a plan for a podcast advertising strategy to reach niche audiences, including sponsorship options, ad placements, and creative messaging.`,
+        `Create a guide on optimizing YouTube video SEO, covering metadata, thumbnails, descriptions, and audience engagement tactics.`,
+        `Draft a step-by-step plan for organizing offline events to complement digital marketing efforts, including logistics, promotion, and post-event analysis.`,
+        `Write a long-form article explaining the impact of AI on marketing automation, personalization, and customer experience enhancements.`
+      ],
+
+      "Business Strategy": [
+        `Craft a detailed business plan outline for a tech startup focused on AI-powered SaaS solutions, covering market analysis, product roadmap, funding strategy, and competitive landscape.`,
+        `Write a strategic growth plan for expanding a mid-sized company into international markets, including entry strategies, localization considerations, and risk management.`,
+        `Develop a SWOT analysis template tailored for new product launches, with examples and action points for leveraging strengths and addressing weaknesses.`,
+        `Create a guide on implementing OKRs (Objectives and Key Results) in startups to align teams, track progress, and foster accountability.`,
+        `Generate a comprehensive overview of lean startup methodology, including build-measure-learn cycles, MVP development, and customer feedback integration.`,
+        `Draft a mergers and acquisitions (M&A) checklist for evaluating target companies, covering financial, legal, and operational due diligence aspects.`,
+        `Write a market segmentation strategy for a consumer goods company, including demographic, geographic, psychographic, and behavioral criteria.`,
+        `Develop a corporate social responsibility (CSR) plan integrating sustainability goals with business objectives and stakeholder engagement.`,
+        `Create a detailed pricing strategy guide for SaaS products, including freemium models, tiered pricing, and value-based pricing approaches.`,
+        `Generate a scenario planning framework to help executives prepare for market uncertainties and disruptive technologies.`,
+        `Write a guide on competitive intelligence gathering techniques, such as benchmarking, market research, and social media monitoring.`,
+        `Draft an investor pitch deck outline focusing on storytelling, problem-solution fit, traction metrics, and financial forecasts.`,
+        `Develop a risk management plan template identifying common business risks and mitigation strategies for startups.`,
+        `Create a strategic partnership evaluation checklist to assess potential collaborators for alignment, synergies, and value creation.`,
+        `Generate a long-term roadmap for digital transformation initiatives within traditional enterprises, including technology adoption and culture change.`,
+        `Write a detailed guide on customer lifetime value (CLV) analysis and how it informs marketing and sales strategies.`,
+        `Develop a talent acquisition strategy aligned with company culture and business goals, including sourcing, interviewing, and onboarding processes.`,
+        `Create an innovation management framework encouraging idea generation, evaluation, and implementation across teams.`,
+        `Draft a turnaround strategy for underperforming business units, including root cause analysis and action plan development.`,
+        `Write a detailed case study of a successful business pivot, highlighting decision-making, execution, and outcomes.`
+      ],
+
+      "Research": [
+        `Write a comprehensive literature review framework for academic researchers, including source evaluation, thematic synthesis, and gap identification.`,
+        `Develop a detailed methodology section template for quantitative research projects, covering sampling, data collection, and statistical analysis.`,
+        `Create guidelines for conducting ethical research, focusing on informed consent, confidentiality, and data protection standards.`,
+        `Generate a step-by-step plan for systematic reviews and meta-analyses, including protocol registration and bias assessment techniques.`,
+        `Write an extensive guide on qualitative research methods such as interviews, focus groups, and ethnography with practical tips.`,
+        `Draft a research proposal outline for a social sciences study, including research questions, hypotheses, and expected contributions.`,
+        `Develop a data visualization strategy for presenting complex datasets clearly and effectively in academic papers.`,
+        `Create a template for documenting experimental procedures in lab research to ensure reproducibility and transparency.`,
+        `Write detailed guidelines for writing abstracts and summaries that capture the essence of research projects succinctly.`,
+        `Generate a checklist for peer reviewing scientific manuscripts, focusing on clarity, validity, and originality.`,
+        `Draft a plan for data management and sharing compliant with FAIR principles (Findable, Accessible, Interoperable, Reusable).`,
+        `Develop a framework for interdisciplinary research collaboration, addressing communication, roles, and conflict resolution.`,
+        `Create a guide on statistical software usage for researchers, comparing popular tools and best practices.`,
+        `Write a comprehensive tutorial on hypothesis testing, confidence intervals, and p-values with examples.`,
+        `Generate instructions for preparing posters and presentations for academic conferences, emphasizing design and messaging.`,
+        `Draft a proposal for citizen science projects, outlining participant engagement and data quality control.`,
+        `Develop guidelines for systematic data coding in mixed-method research to ensure consistency and reliability.`,
+        `Create a framework for integrating open science practices into research workflows, including preprints and open data.`,
+        `Write a detailed case study on the impact of big data analytics in healthcare research, highlighting benefits and challenges.`,
+        `Generate a step-by-step guide on conducting longitudinal studies with participant retention strategies.`
+      ]
+    }
+
+أكيد، هذا نموذج خطة محتوى متكاملة لشهر:
+
+1. الأسبوع الأول:  
+- موضوع: مقدمة في ريادة الأعمال  
+- نوع المحتوى: مقال تعريفي + فيديو قصير  
+- هدف: جذب المهتمين بريادة الأعمال الجدد  
+
+2. الأسبوع الثاني:  
+- موضوع: أدوات تسويق رقمية أساسية  
+- نوع المحتوى: تدوينة + بودكاست مقابلة مع خبير تسويق  
+- هدف: توضيح أدوات فعالة في السوق  
+
+3. الأسبوع الثالث:  
+- موضوع: بناء خطة عمل ناجحة  
+- نوع المحتوى: ورشة عمل مباشرة + نموذج خطة عمل قابل للتحميل  
+- هدف: تمكين المتابعين من تطبيق عملي  
+
+4. الأسبوع الرابع:  
+- موضوع: قصص نجاح رياديين محليين  
+- نوع المحتوى: سلسلة منشورات + جلسة أسئلة وأجوبة تفاعلية  
+- هدف: تحفيز وتشجيع الجمهور  
+
+هل تريدني أساعدك في صياغة المحتوى التفصيلي لكل جزء أو تحضير خطة ترويجية أيضاً؟
