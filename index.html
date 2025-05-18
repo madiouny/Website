@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prompts Dealer</title>
+<style>
+  :root {
+    --bg-light: #f4f7f8;
+    --bg-dark: #121212;
+    --text-light: #222;
+    --text-dark: #eee;
+    --primary: #4a90e2;
+    --secondary: #50e3c2;
+    --accent: #f5a623;
+    --btn-bg: #4a90e2;
+    --btn-hover: #357abd;
+  }
+  body {
+    margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-light);
+    color: var(--text-light);
+    transition: background 0.3s, color 0.3s;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; padding: 1rem;
+  }
+  body.dark {
+    background: var(--bg-dark);
+    color: var(--text-dark);
+  }
+  header {
+    font-size: 2.2rem; font-weight: 700; margin: 1rem 0 0.2rem;
+    color: var(--primary);
+  }
+  #presentation {
+    font-size: 1.1rem; margin-bottom: 2rem;
+    max-width: 600px; text-align: center;
+  }
+  #question-box {
+    background: var(--secondary);
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    max-width: 480px;
+    text-align: center;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    color: #000;
+    font-weight: 600;
+    user-select: none;
+  }
+  #question-box button {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.4rem;
+    margin: 1rem 0 0 0.7rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.25s;
+  }
+  #question-box button:hover {
+    background: var(--btn-hover);
+  }
+  #category-select {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 2px solid var(--primary);
+    cursor: pointer;
+  }
+  main {
+    max-width: 700px;
+    width: 100%;
+    margin-top: 3rem;
+    display: none;
+    flex-direction: column;
+    gap: 1.4rem;
+  }
+  #prompt-box {
+    background: #fff;
+    padding: 1.2rem 1.5rem;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    font-size: 1.1rem;
+    line-height: 1.4;
+    position: relative;
+    white-space: pre-wrap;
+  }
+  body.dark #prompt-box {
+    background: #222;
+    box-shadow: 0 8px 20px rgba(255,255,255,0.1);
+    color: var(--text-dark);
+  }
+  #buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.7rem;
+    justify-content: flex-end;
+  }
+  button.action-btn {
+    background: var(--btn-bg);
+    border: none;
+    padding: 0.6rem 1.4rem;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.25s;
+    user-select: none;
+  }
+  button.action-btn:hover {
+    background: var(--btn-hover);
+  }
+  #darkmode-toggle {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    background: var(--secondary);
+    border: none;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.9rem;
+    border-radius: 10px;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    transition: background 0.3s;
+    z-index: 10;
+  }
+  #darkmode-toggle:hover {
+    background: var(--accent);
+    color: #000;
+  }
+  footer {
+    margin: 3rem 0 1rem;
+    color: var(--primary);
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+<button id="darkmode-toggle" aria-label="Toggle Dark Mode">Dark Mode</button>
+
+<header>Prompts Dealer</header>
+<div id="presentation">Your ultimate AI prompts library. Choose a category, get powerful prompts tailored for top AIs like ChatGPT and Deepseek. Enhance your creativity now!</div>
+
+<div id="question-box">
+  <div>What do you want to explore?</div>
+  <select id="ai-choice" aria-label="Choose AI" >
+    <option value="chatgpt" selected>ChatGPT Prompts</option>
+    <option value="deepseek">Deepseek AI Prompts</option>
+    <option value="allais">All AIs Prompts</option>
+  </select>
+  <div style="margin-top: 1rem;">
+    <label for="category-select">Choose Category:</label><br/>
+    <select id="category-select" aria-label="Choose Category">
+      <option value="" disabled selected>Select category</option>
+    </select>
+  </div>
+</div>
+
+<main>
+  <div id="prompt-box" tabindex="0" aria-live="polite"></div>
+  <div id="buttons">
+    <button id="copy-btn" class="action-btn" aria-label="Copy prompt">Copy Prompt</button>
+    <button id="generate-btn" class="action-btn" aria-label="Generate another prompt">Generate More</button>
+  </div>
+</main>
+
+<footer>Made with ❤️ by Prompts Dealer</footer>
+
+<script>
+  const categories = {
+    "Digital Marketing": [
+      "Write a comprehensive digital marketing plan for a tech startup focusing on improving social media engagement and increasing online sales. Include goals, tools, marketing channels, and proposed budget.",
+      "Create a Facebook post content to attract new clients for a company offering digital marketing services, emphasizing its competitive advantages and benefits. Make the content motivating and engaging.",
+      "Design a step-by-step guide on using influencer marketing for a small business launching a new product.",
+      "Draft an email marketing campaign targeting young adults to promote a fitness app subscription.",
+      "Write SEO-friendly blog post outline for a website selling eco-friendly products.",
+      "Generate catchy slogans for a new brand specializing in handmade crafts.",
+      "Create ad copy for Google Ads targeting local restaurant promotions.",
+      "Develop a content calendar for Instagram for a month, focusing on educational posts about personal finance.",
+      "Suggest creative strategies to increase YouTube channel subscribers for a tech review page.",
+      "Write a Twitter thread explaining the benefits of email marketing for startups.",
+      "Compose LinkedIn post promoting a webinar about digital marketing trends in 2025.",
+      "Prepare a script for a promotional video about a SaaS product targeting small businesses.",
+      "Create ideas for interactive polls on Instagram stories to engage followers.",
+      "Write a case study overview for a successful digital marketing campaign of an online store.",
+      "Design a flyer text to promote a weekend workshop on social media marketing.",
+      "Generate tips for improving customer retention through loyalty programs.",
+      "Draft SMS marketing messages to announce a flash sale event.",
+      "Create a checklist for optimizing website landing pages to increase conversions.",
+      "Write persuasive product descriptions for a new range of eco-friendly gadgets.",
+      "Suggest hashtag strategies for boosting organic reach on Twitter and Instagram."
+    ],
+    "E-Learning": [
+      "Develop an online training course plan teaching programming skills for beginners, including curriculum, resources, evaluation methods, and tools for interaction between teacher and students.",
+      "Write an advertising text for an online course aimed at teaching English to beginners, focusing on improving conversation and listening skills.",
+      "Create an outline for a course on digital photography basics for hobbyists.",
+      "Design engaging quiz questions for a module on human anatomy.",
+      "Draft email templates to increase enrollment for an online learning platform.",
+      "Write guidelines for instructors to encourage student participation in virtual classrooms.",
+      "Generate ideas for interactive activities to teach math concepts to middle schoolers.",
+      "Create a lesson plan for teaching creative writing to teenagers.",
+      "Develop content for a webinar about effective time management for students.",
+      "Write a script for tutorial videos explaining basic Excel functions.",
+      "Design a feedback form to assess student satisfaction after completing a course.",
+      "Generate motivational quotes to encourage lifelong learning.",
+      "Create tips for parents to support their children in online education.",
+      "Write blog post ideas about the future of e-learning post-pandemic.",
+      "Develop a checklist for creating accessible learning materials.",
+      "Draft a welcome message for new users of an educational app.",
+      "Create a set of flashcards for learning common English idioms.",
+      "Write step-by-step instructions for setting up a home study space.",
+      "Generate social media posts promoting STEM education for girls.",
+      "Design a certificate template text for course completion recognition."
+    ],
+    "Creative Writing": [
+      "Write a short story about a character facing a major challenge in life and overcoming it through willpower and creativity. Make the narrative exciting and full of emotions.",
+      "Compose a poem expressing the beauty of nature and the spiritual connection with the earth, using a contemporary and attractive style.",
+      "Create a character profile for a mysterious detective solving crimes in a futuristic city.",
+      "Write a dialogue scene between two friends confronting a secret that changes their relationship.",
+      "Develop a plot outline for a thriller novel set in a remote island.",
+      "Compose a monologue of a protagonist revealing their deepest fears and hopes.",
+      "Write a descriptive passage capturing a bustling city market at dawn.",
+      "Create an alternate ending for a classic fairy tale with a modern twist.",
+      "Write a narrative from the perspective of an unreliable narrator.",
+      "Develop an opening paragraph for a sci-fi story exploring AI consciousness.",
+      "Compose a love letter from a historical figure to their lost love.",
+      "Write a screenplay scene showing a confrontation between hero and villain.",
+      "Create a setting description for a haunted mansion used in a horror story.",
+      "Write a poem about time and memory in free verse style.",
+      "Develop a story idea involving time travel and moral dilemmas.",
+      "Write a flash fiction story under 300 words on the theme of hope.",
+      "Create a letter from a stranded astronaut back to Earth.",
+      "Write a humorous dialogue between two robots debating human emotions.",
+      "Compose a journal entry of a character exploring a strange new world.",
+      "Develop a motivational story about persistence and self-discovery."
+    ],
+    "Business & Productivity": [
+      "Write a business plan summary for a startup focusing on sustainable packaging solutions, including mission, target market, and financial projections.",
+      "Create a professional email template for requesting a meeting with potential investors.",
+      "Generate a detailed to-do list for managing a remote team effectively.",
+      "Write guidelines for improving workplace communication and collaboration.",
+      "Develop a script for a motivational speech encouraging employee engagement.",
+      "Create content for a LinkedIn article about productivity hacks for entrepreneurs.",
+      "Write a SWOT analysis for a small retail business competing with e-commerce giants.",
+      "Draft an onboarding checklist for new employees in a tech company.",
+      "Generate ideas for time management techniques suitable for freelancers.",
+      "Create an agenda for a business strategy meeting with key stakeholders.",
+      "Write tips for setting and achieving SMART goals in a corporate environment.",
+      "Develop a template for weekly progress reports for project managers.",
+      "Create email follow-up sequences for sales outreach campaigns.",
+      "Write a case study on how a company increased revenue through customer feedback.",
+      "Draft a memo explaining new workplace policies related to remote work.",
+      "Generate ideas for team-building activities that improve morale.",
+      "Write a blog post about balancing work-life integration in busy professionals.",
+      "Create a checklist for launching a new product successfully.",
+      "Develop a script for a customer service training video.",
+      "Write persuasive content for a crowdfunding campaign landing page."
+    ]
+  };
+
+  const aiLabels = {
+    chatgpt: "ChatGPT Prompts",
+    deepseek: "Deepseek AI Prompts",
+    allais: "All AIs Prompts"
+  };
+
+  const promptBox = document.getElementById("prompt-box");
+  const copyBtn = document.getElementById("copy-btn");
+  const generateBtn = document.getElementById("generate-btn");
+  const categorySelect = document.getElementById("category-select");
+  const aiChoice = document.getElementById("ai-choice");
+  const mainSection = document.querySelector("main");
+  const questionBox = document.getElementById("question-box");
+  const darkToggle = document.getElementById("darkmode-toggle");
+
+  // Fill categories select options dynamically
+  function populateCategories() {
+    categorySelect.innerHTML = '<option value="" disabled selected>Select category</option>';
+    for (const cat in categories) {
+      const option = document.createElement("option");
+      option.value = cat;
+      option.textContent = cat;
+      categorySelect.appendChild(option);
+    }
+  }
+
+  populateCategories();
+
+  let currentCategory = null;
+  let currentPromptIndex = 0;
+
+  function showPrompt(category) {
+    if (!category || !categories[category]) return;
+    const prompts = categories[category];
+    currentPromptIndex = Math.floor(Math.random() * prompts.length);
+    promptBox.textContent = prompts[currentPromptIndex];
+    promptBox.focus();
+  }
+
+  // Show question box initially
+  questionBox.style.display = "block";
+  mainSection.style.display = "none";
+
+  categorySelect.addEventListener("change", () => {
+    currentCategory = categorySelect.value;
+    if (currentCategory) {
+      questionBox.style.display = "none";
+      mainSection.style.display = "flex";
+      showPrompt(currentCategory);
+    }
+  });
+
+  copyBtn.addEventListener("click", () => {
+    if (!promptBox.textContent) return;
+    navigator.clipboard.writeText(promptBox.textContent).then(() => {
+      copyBtn.textContent = "Copied!";
+      setTimeout(() => (copyBtn.textContent = "Copy Prompt"), 1500);
+    });
+  });
+
+  generateBtn.addEventListener("click", () => {
+    if (currentCategory) {
+      let newIndex;
+      do {
+        newIndex = Math.floor(Math.random() * categories[currentCategory].length);
+      } while (newIndex === currentPromptIndex);
+      currentPromptIndex = newIndex;
+      promptBox.textContent = categories[currentCategory][currentPromptIndex];
+      promptBox.focus();
+    }
+  });
+
+  darkToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    darkToggle.textContent = document.body.classList.contains("dark") ? "Light Mode" : "Dark Mode";
+  });
+
+  // Presentation animation (3 sec), then question box fade in
+  window.onload = () => {
+    promptBox.textContent = "";
+    mainSection.style.display = "none";
+    questionBox.style.opacity = 0;
+    let pres = document.getElementById("presentation");
+    pres.style.opacity = 1;
+    setTimeout(() => {
+      pres.style.transition = "opacity 1s ease";
+      pres.style.opacity = 0;
+      setTimeout(() => {
+        pres.style.display = "none";
+        questionBox.style.display = "block";
+        questionBox.style.transition = "opacity 1s ease";
+        questionBox.style.opacity = 1;
+      }, 1000);
+    }, 3000);
+  };
+</script>
+</body>
+</html>
