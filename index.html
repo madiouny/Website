@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Prompts Dealer</title>
+
+<!-- ===== FONTS ===== -->
+<link rel="preconnect" href="https://fonts.gstatic.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+<style>
+/* ===== CSS VARIABLES ===== */
+:root{
+  --bg-light:#f9fafb;
+  --bg-dark:#0f1117;
+  --text-light:#111;
+  --text-dark:#f1f1f1;
+  --primary:#3a5eff;
+  --primary-dark:#5f7cff;
+  --card-light:#fff;
+  --card-dark:#1a1d24;
+  --radius:16px;
+  --ease:cubic-bezier(.4,.0,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg-light);
+  color:var(--text-light);
+  min-height:100vh;display:flex;flex-direction:column;align-items:center
+}
+body.dark{background:var(--bg-dark);color:var(--text-dark)}
+
+/* ===== HERO INTRO ===== */
+#hero{
+  position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  background:var(--primary);color:#fff;z-index:999;
+  animation:fadeIntro 3.5s forwards
+}
+@keyframes fadeIntro{0%,75%{opacity:1}100%{opacity:0;visibility:hidden}}
+
+/* ===== THEME TOGGLE ===== */
+#themeToggle{
+  position:fixed;top:18px;right:18px;z-index:10;
+  padding:.45rem .9rem;border:none;border-radius:var(--radius);
+  background:var(--primary);color:#fff;font-weight:600;cursor:pointer;
+  transition:background .3s var(--ease)
+}
+#themeToggle:hover{background:var(--primary-dark)}
+body.dark #themeToggle{background:var(--primary-dark)}
+body.dark #themeToggle:hover{background:var(--primary)}
+
+/* ===== WELCOME MODAL ===== */
+.modal{
+  position:fixed;inset:0;display:flex;justify-content:center;align-items:center;
+  background:rgba(0,0,0,.55);z-index:900;opacity:0;visibility:hidden;transition:opacity .4s var(--ease)
+}
+.modal.active{opacity:1;visibility:visible}
+.modal-card{
+  background:var(--card-light);border-radius:var(--radius);padding:2rem 2.5rem;max-width:420px;width:90%;
+  text-align:center;box-shadow:0 25px 60px rgba(0,0,0,.15);transition:background .3s
+}
+body.dark .modal-card{background:var(--card-dark)}
+.modal-card h2{font-size:1.4rem;font-weight:700;margin-bottom:1rem}
+.modal-card select,.modal-card button{
+  width:100%;margin-top:1rem;padding:.7rem 1rem;font-size:1rem;border-radius:12px;border:2px solid var(--primary);
+  background:transparent;color:inherit;cursor:pointer;transition:border .25s var(--ease),background .25s var(--ease)
+}
+.modal-card button{
+  background:var(--primary);color:#fff;border:none;font-weight:600
+}
+.modal-card button:hover{background:var(--primary-dark)}
+
+/* ===== MAIN APP LAYOUT ===== */
+main{display:none;max-width:800px;width:90%;margin-top:5rem}
+h1.title{text-align:center;font-size:2rem;font-weight:700;margin-bottom:2rem;color:var(--primary)}
+body.dark h1.title{color:var(--primary-dark)}
+select#category{width:100%;max-width:380px;margin:0 auto 2rem;padding:.7rem 1rem;border-radius:12px;border:2px solid var(--primary);font-size:1rem}
+body.dark select#category{background:#1f222a;color:var(--text-dark);border-color:var(--primary-dark)}
+
+/* ===== PROMPT BOX ===== */
+#promptBox{
+  background:var(--card-light);border-radius:var(--radius);padding:1.6rem 1.8rem;min-height:160px;
+  box-shadow:0 20px 40px rgba(0,0,0,.08);font-size:1.06rem;line-height:1.55;white-space:pre-wrap;transition:background .3s
+}
+body.dark #promptBox{background:var(--card-dark);box-shadow:0 20px 40px rgba(255,255,255,.08)}
+.buttons{display:flex;justify-content:flex-end;gap:1rem;margin-top:1.2rem}
+.action{
+  padding:.65rem 1.4rem;border-radius:12px;border:none;font-size:1rem;font-weight:600;color:#fff;
+  background:var(--primary);cursor:pointer;transition:background .25s var(--ease);box-shadow:0 5px 15px rgba(58,94,255,.4)
+}
+.action:hover{background:var(--primary-dark)}
+body.dark .action{box-shadow:0 5px 15px rgba(95,124,255,.35)}
+
+/* ===== FOOTER ===== */
+footer{margin-top:4rem;color:#888;font-size:.9rem}
+body.dark footer{color:#666}
+</style>
+</head>
+<body>
+
+<!-- ===== HERO INTRO ===== -->
+<section id="hero">
+  <h1 style="font-size:3rem;font-weight:700;letter-spacing:-.5px">Prompts Dealer</h1>
+  <p style="margin-top:.8rem;font-size:1.15rem;font-weight:500">Unlock AI power with the perfect prompt.</p>
+</section>
+
+<!-- ===== THEME TOGGLE BUTTON ===== -->
+<button id="themeToggle" aria-label="Toggle dark mode">Dark Mode</button>
+
+<!-- ===== WELCOME MODAL ===== -->
+<div class="modal" id="welcomeModal">
+  <div class="modal-card">
+    <h2>Which AI are you using?</h2>
+    <select id="aiSelect" aria-label="AI choice">
+      <option value="chatgpt" selected>ChatGPT</option>
+      <option value="deepseek">Deepseek</option>
+      <option value="gemini">Gemini</option>
+      <option value="claude">Claude</option>
+      <option value="all">All AIs</option>
+    </select>
+    <h2 style="margin-top:2rem">Choose a category</h2>
+    <select id="categorySelect" aria-label="Category choice">
+      <option disabled selected>-- Select Category --</option>
+    </select>
+    <button id="startBtn">Get Prompts</button>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<main id="app">
+  <h1 class="title">Prompt Library</h1>
+
+  <select id="category" aria-label="Switch category"></select>
+
+  <div id="promptBox">Choose a category to display a prompt…</div>
+
+  <div class="buttons">
+    <button class="action" id="copyBtn">Copy</button>
+    <button class="action" id="moreBtn">Generate More</button>
+  </div>
+</main>
+
+<footer>&copy; 2025 Prompts Dealer</footer>
+
+<script>
+/* ===== DARK / LIGHT MODE ===== */
+const themeBtn = document.getElementById('themeToggle');
+function setTheme(dark){document.body.classList.toggle('dark',dark);themeBtn.textContent=dark?'Light Mode':'Dark Mode';localStorage.setItem('darkMode',dark)}
+themeBtn.onclick=()=>setTheme(!document.body.classList.contains('dark'));
+setTheme(localStorage.getItem('darkMode')==='true');
+
+/* ===== PROMPTS DATA (20 each) ===== */
+const prompts={
+  "Digital Marketing":[
+    "Write a comprehensive digital marketing plan for a tech startup focusing on improving social media engagement and increasing online sales. Include goals, tools, marketing channels, and proposed budget.",
+    "Create a Facebook post content to attract new clients for a company offering digital marketing services, emphasizing its competitive advantages and benefits. Make the content motivating and engaging.",
+    "Design a step‑by‑step guide on using influencer marketing for a small business launching a new product.",
+    "Draft an email marketing campaign targeting young adults to promote a fitness app subscription.",
+    "Write SEO‑friendly blog‑post outline for a website selling eco‑friendly products.",
+    "Generate catchy slogans for a new brand specializing in handmade crafts.",
+    "Create ad copy for Google Ads targeting local restaurant promotions.",
+    "Develop a one‑month Instagram content calendar focused on personal‑finance education.",
+    "Suggest creative strategies to increase YouTube subscribers for a tech‑review channel.",
+    "Write a Twitter thread explaining the benefits of email marketing for startups.",
+    "Compose a LinkedIn post promoting a webinar about digital‑marketing trends in 2025.",
+    "Prepare a script for a 60‑second promo video of a SaaS product aimed at small businesses.",
+    "Brainstorm interactive poll ideas for Instagram stories to engage followers.",
+    "Write a case‑study overview of a successful digital campaign for an e‑commerce store.",
+    "Draft high‑conversion copy for a flyer promoting a weekend social‑media workshop.",
+    "Generate tips for improving customer retention through loyalty programs.",
+    "Write SMS marketing messages announcing a flash‑sale event.",
+    "Create a checklist for optimizing landing pages to boost conversions.",
+    "Write persuasive product descriptions for a new range of eco‑friendly gadgets.",
+    "Suggest hashtag strategies for boosting organic reach on Twitter and Instagram."
+  ],
+  "E‑Learning":[
+    "Develop an online course plan teaching programming for beginners. Include curriculum, resources, evaluation methods, and interaction tools.",
+    "Write ad copy for an online course that teaches English conversation and listening skills to beginners.",
+    "Create an outline for a digital‑photography basics course aimed at hobbyists.",
+    "Design engaging quiz questions for a module on human anatomy.",
+    "Draft email templates to increase enrollment in an online learning platform.",
+    "Write guidelines for instructors to encourage participation in virtual classrooms.",
+    "Generate interactive activities that teach fractions to middle‑school students.",
+    "Create a lesson plan for teaching creative writing to teenagers.",
+    "Develop content for a webinar on effective time management for students.",
+    "Write a script for tutorial videos explaining basic Excel functions.",
+    "Design a feedback form to assess student satisfaction after course completion.",
+    "Generate motivational quotes to encourage lifelong learning.",
+    "Create tips for parents to support children in online education.",
+    "Write blog‑post ideas about the future of e‑learning after the pandemic.",
+    "Develop a checklist for creating accessible learning materials.",
+    "Draft a welcome message for new users of an educational app.",
+    "Create a set of flashcards for learning common English idioms.",
+    "Write instructions for setting up an ergonomic home study space.",
+    "Generate social media posts promoting STEM education for girls.",
+    "Design certificate‑template text for course‑completion recognition."
+  ],
+  "Creative Writing":[
+    "Write a short story about a character facing a major challenge and overcoming it through willpower and creativity. Keep the narrative emotional and gripping.",
+    "Compose a poem praising the beauty of nature and the spiritual connection to earth, in a fresh, contemporary voice.",
+    "Create a character profile for a mysterious detective solving crimes in a futuristic city.",
+    "Write dialogue between two friends confronting a secret that changes their relationship.",
+    "Develop a plot outline for a thriller novel set on a remote island.",
+    "Compose a monologue in which the protagonist reveals their deepest fears and hopes.",
+    "Write a descriptive passage capturing a bustling city market at dawn.",
+    "Create an alternate ending for a classic fairy tale with a modern twist.",
+    "Write a narrative from the perspective of an unreliable narrator.",
+    "Develop an opening paragraph for a sci‑fi story exploring AI consciousness.",
+    "Compose a love letter from a historical figure to their lost love.",
+    "Write a screenplay scene where the hero confronts the villain in a tense standoff.",
+    "Describe a haunted mansion setting for a horror story in vivid detail.",
+    "Write a poem about time and memory using free‑verse style.",
+    "Develop a story idea involving time travel and moral dilemmas.",
+    "Write a flash‑fiction piece under 300 words on the theme of hope.",
+    "Create a letter from a stranded astronaut back to Earth explaining their situation.",
+    "Write humorous dialogue between two robots debating human emotions.",
+    "Compose a journal entry of a traveler exploring a strange new world.",
+    "Develop a motivational story about persistence and self‑discovery."
+  ],
+  "Business & Productivity":[
+    "Write a business‑plan summary for a startup focused on sustainable packaging solutions, covering mission, market, and projections.",
+    "Create a professional email template requesting a meeting with prospective investors.",
+    "Generate a detailed to‑do list for effectively managing a fully remote team.",
+    "Write guidelines for improving internal communication and collaboration.",
+    "Draft a motivational speech encouraging higher employee engagement.",
+    "Create content for a LinkedIn article about productivity hacks for entrepreneurs.",
+    "Write a SWOT analysis for a local retail business competing with e‑commerce giants.",
+    "Draft an onboarding checklist for new hires at a tech company.",
+    "Generate time‑management techniques suitable for freelancers juggling many clients.",
+    "Create an agenda template for a quarterly business‑strategy meeting.",
+    "Write tips on setting and achieving SMART goals in a corporate environment.",
+    "Develop a weekly progress‑report template for project managers.",
+    "Draft follow‑up email sequences for cold sales outreach.",
+    "Write a case study illustrating how customer feedback increased revenue.",
+    "Draft a memo explaining new remote‑work policies to employees.",
+    "Generate team‑building activity ideas that boost morale in virtual settings.",
+    "Write a blog post on work–life integration strategies for busy professionals.",
+    "Create a checklist for launching a new physical product successfully.",
+    "Draft a script for a customer‑service training video focusing on empathy.",
+    "Write persuasive copy for a crowdfunding campaign landing page."
+  ]
+};
+
+/* ===== BUILD CATEGORY DROPDOWNS ===== */
+const catSelect=document.getElementById('categorySelect');
+const catSwitch=document.getElementById('category');
+for(const c in prompts){
+  const opt=document.createElement('option');
+  opt.value=c;opt.textContent=c;catSelect.appendChild(opt);
+}
+catSwitch.innerHTML=catSelect.innerHTML;
+
+/* ===== APP ELEMENTS ===== */
+const welcomeModal=document.getElementById('welcomeModal');
+const startBtn=document.getElementById('startBtn');
+const app=document.getElementById('app');
+const promptBox=document.getElementById('promptBox');
+const copyBtn=document.getElementById('copyBtn');
+const moreBtn=document.getElementById('moreBtn');
+let currentCat='',currentIdx=0;
+
+/* ===== FUNCTIONS ===== */
+function randomPrompt(cat){
+  const arr=prompts[cat];if(!arr)return'';
+  let idx=Math.floor(Math.random()*arr.length);
+  if(arr.length>1&&idx===currentIdx)idx=(idx+1)%arr.length;
+  currentIdx=idx;return arr[idx];
+}
+
+/* ===== EVENT HANDLERS ===== */
+startBtn.onclick=()=>{
+  currentCat=catSelect.value;
+  if(!currentCat||!prompts[currentCat])return alert('Please choose a category.');
+  welcomeModal.classList.remove('active');
+  app.style.display='block';
+  catSwitch.value=currentCat;
+  promptBox.textContent=randomPrompt(currentCat);
+};
+catSwitch.onchange=()=>{
+  currentCat=catSwitch.value;
+  promptBox.textContent=randomPrompt(currentCat);
+};
+moreBtn.onclick=()=>{if(currentCat)promptBox.textContent=randomPrompt(currentCat)};
+copyBtn.onclick=()=>{
+  navigator.clipboard.writeText(promptBox.textContent).then(()=>{
+    copyBtn.textContent='Copied!';
+    setTimeout(()=>copyBtn.textContent='Copy',1500);
+  });
+};
+
+/* ===== SHOW WELCOME MODAL AFTER INTRO FADES ===== */
+setTimeout(()=>welcomeModal.classList.add('active'),3500);
+</script>
+</body>
+</html>
